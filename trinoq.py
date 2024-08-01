@@ -56,11 +56,13 @@ def create_connection():
 
 
 def get_query(args):
+
     def find_fmt_keys(s: str) -> list[str] | None:
         import re
         pattern = r"{[^}]+}"
         matches = re.findall(pattern, s)
         return matches
+
     query_in = args.query
     try:
         with open(query_in, "r") as f:
@@ -102,6 +104,12 @@ def get_args():
         "--eval-df",
         help="Evaluate 'df' using string or filename",
         default="",
+    )
+
+    parser.add_argument(
+        "--pdb",
+        help="Run pdb on start",
+        action="store_true",
     )
     return parser.parse_args()
 
@@ -160,6 +168,10 @@ def app():
     args = get_args()
     query = get_query(args)
     quiet = args.quiet
+
+    if args.pdb:
+        breakpoint()
+
     printer("In[query]:", quiet=quiet)
     printer(query, quiet=quiet)
 
