@@ -145,8 +145,12 @@ def execute(query, engine, no_cache=False, quiet=False):
         df = pd.read_sql(query, engine)
 
     # cache {{
-    printer(f"Saving cache: {temp_file}", quiet=quiet)
-    df.to_parquet(temp_file)
+    try:
+        df.to_parquet(temp_file)
+    except Exception as e:
+        printer(f"Error caching:\n{e}", quiet=quiet)
+    else:
+        printer(f"Saving cache: {temp_file}", quiet=quiet)
     # }}
 
     return df
