@@ -56,12 +56,27 @@ def create_connection():
 
 
 def get_query(args):
+    def find_fmt_keys(s: str) -> list[str] | None:
+        import re
+        pattern = r"{[^}]+}"
+        matches = re.findall(pattern, s)
+        return matches
     query_in = args.query
     try:
         with open(query_in, "r") as f:
             out = f.read()
     except FileNotFoundError:
         out = query_in
+
+    # format {{{
+    fmt_keys = find_fmt_keys(out)
+    if fmt_keys:
+        fmt_values = {}
+        for key in fmt_keys:
+            k = key[1:-1]
+            fmt_values[k] = os.environ[k]
+        out = out.format(**fmt_values)
+    # }}}
     return out
 
 
